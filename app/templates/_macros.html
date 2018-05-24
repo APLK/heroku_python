@@ -1,0 +1,34 @@
+{#分页必须要加上这句,与index.html中的{{ macros.pagination_widget(pagination, '.index') }}宏链接#}
+{% macro pagination_widget(pagination, endpoint) %}
+<ul class="pagination">
+{#    如果没有前一页就渲染不能点击#}
+    <li{% if not pagination.has_prev %} class="disabled"{% endif %}>
+{#        如果有前一页,分页宏把接收到的所有参数通过**kwargs参数都传给了生成的分页链接url_for()方法,否则链接为加# #}
+        <a href="{% if pagination.has_prev %}{{ url_for(endpoint, page=pagination.prev_num, **kwargs) }}{% else %}###{% endif %}">
+            &laquo;
+        </a>
+    </li>
+{#    页数列表迭代#}
+    {% for p in pagination.iter_pages() %}
+        {% if p %}
+{#            pagination.page当前页码#}
+            {% if p == pagination.page %}
+            <li class="active">
+                <a href="{{ url_for(endpoint, page = p, **kwargs) }}">{{ p }}</a>
+            </li>
+            {% else %}
+            <li>
+                <a href="{{ url_for(endpoint, page = p, **kwargs) }}">{{ p }}</a>
+            </li>
+            {% endif %}
+        {% else %}
+        <li class="disabled"><a href="#">&hellip;</a></li>
+        {% endif %}
+    {% endfor %}
+    <li{% if not pagination.has_next %} class="disabled"{% endif %}>
+        <a href="{% if pagination.has_next %}{{ url_for(endpoint, page=pagination.page + 1, **kwargs) }}{% else %}#{% endif %}">
+            &raquo;
+        </a>
+    </li>
+</ul>
+{% endmacro %}

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+ 
+ {% block title %}Fly - 搜索{% endblock %}
+
+{% block page_content %}
+    <div style="padding-left: 40px">
+
+{% if posts[0] %}
+<h1>"{{query}}"　的搜索结果:</h1>
+{% include '_posts.html' %}
+{% else %}
+<h3>未找到"{{query}}"的搜索结果，请精简关键字，关键字中不要带有符号、空格等等</h3>
+{% endif %}
+    </div>
+
+{% endblock %}

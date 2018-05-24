@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "_macros.html" as macros %}
+
+{% block title %}Flasky{% endblock %}
+
+{% block page_content %}
+    <div style="display:flex;">
+        <aside style="background-color: #1A2225;background-size:15% 100%;width: 15%;flex:0 0 0 15%;margin-right: 40px">
+            <!-- 左侧拉伸栏 -->
+            <ul id="accordion" class="accordion">
+                <li>
+                    <div class="link"><i class="fa fa-tags"></i>分类<i
+                            class="fa fa-chevron-down"></i></div>
+                    <ul class="submenu">
+                        {% for category in categorys %}
+                            <li>
+                                <a href="{{ url_for('.show_category',name=category.name,id=category.id) }}"><span
+                                        style="margin-right: 12px"
+                                        class="fa fa-code-fork"></span>{{ category.name }}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </li>
+                <li>
+                    <div class="link"><i class="fa fa-bookmark"></i>热门文章<i
+                            class="fa fa-chevron-down"></i>
+                    </div>
+                    <ul class="submenu">
+                        {% for post in hot_posts %}
+                            <li><a href="{{ url_for('.post', id=post.id) }}"><span
+                                    style="margin-right: 12px"
+                                    class="fa fa-code-fork"></span>{{ post.title }}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </li>
+            </ul>
+        </aside>
+        <div style="width:100%;flex: 1;height: 100%">
+            <div>
+                <p style="font-size: 20px;padding-top: 10px">您好,
+                    {% if current_user.is_authenticated %}{{ current_user.username }}{% else %}
+                        请登录{% endif %}!</p>
+            </div>
+            <div>
+                {% if current_user.can(Permission.WRITE_ARTICLES) %}
+                    {{ wtf.quick_form(form) }}
+                {% endif %}
+            </div>
+            <div class="post-tabs">
+                <ul class="nav nav-tabs">
+                    <li{% if not show_followed %} class="active"{% endif %}><a
+                            href="{{ url_for('.show_all') }}">所有博客</a></li>
+                    {% if current_user.is_authenticated %}
+                        <li{% if show_followed %} class="active"{% endif %}><a
+                                href="{{ url_for('.show_followed') }}">好友博客</a></li>
+                    {% endif %}
+                </ul>
+                {% include '_posts.html' %}
+            </div>
+            {#    {% if pagination %}#}
+
+            <div class="pagination">
+                {{ macros.pagination_widget(pagination, '.index') }}
+            </div>
+            {#    {% endif %}#}
+        </div>
+    </div>
+{% endblock %}
+
+{#文本预览框#}
+{% block scripts %}
+    {{ super() }}
+    {{ pagedown.include_pagedown() }}
+{% endblock %}
+
+
+{#{% extends "base.html" %}#}
+{#{% import "bootstrap/wtf.html" as wtf %}#}
+{#{% block title %}Flasky{% endblock %}#}
+{#{% block page_content %}#}
+{#    <div class="page-header">#}
+{#        <h1>您好, {% if current_user.is_authenticated %}{{ current_user.username }}{% else %}default{% endif %}!</h1>#}
+{#        {% if not known %}#}
+{#            <p>您还未登录,请登录...</p>#}
+{#        {% else %}#}
+{#            <p>很高兴再次光临!</p>#}
+{#        {% endif %}#}
+{#    </div>#}
+{#    {{ wtf.quick_form(form) }}#}
+{#    <br/>#}
+{#    <br/>#}
+{#    <br/>#}
+{#    <p>北京时间: {{ moment(current_time).format('LLL') }}.</p>#}
+{#    {% if current_user.is_authenticated %}#}
+{#    <p>距离上次登录时间间隔: {{ moment(current_time).fromNow(refresh=True) }}</p>#}
+{#    {% endif %}#}
+{#{% endblock %}#}
+
